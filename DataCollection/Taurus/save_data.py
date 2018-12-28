@@ -21,8 +21,9 @@ How to run:
 ### GLOBAL PARAMETERS ####
 ##########################
 
-SUBJECT_ID = 'S8'
-TRIAL_ID = 'T5'
+# Get this information from Taurus computer
+# SUBJECT_ID = 'S8'
+# TRIAL_ID = 'T5'
 
 BASE_WRITE_PATH = '/home/natalia/Desktop/Forward_Project/DataCollection/Taurus/data'
 
@@ -30,8 +31,8 @@ DEPTH_SIZE = (640, 480)
 RGB_SIZE = (1920, 1080)
 FPS = 30
 
-TCP_IP = 'localhost'
-PORT = 5000
+TCP_IP = 'localhost' #'192.168.1.118'
+PORT = 10000
 
 class SaveData:
 	def __init__(self, debug = True):
@@ -42,6 +43,9 @@ class SaveData:
 		## Initialize the Client
 		self.client = Client(TCP_IP, PORT, buffer_size = 1000000)
 		if(not self.client.connect_status): self.client.init_socket()		
+		## Get information about subject and lexicon
+		sub_lex_info = self.client.send_data('info')
+		SUBJECT_ID, TRIAL_ID = tuple(sub_lex_info.split(','))
 
 		## Make directory
 		self.dir_path = join(BASE_WRITE_PATH, SUBJECT_ID)
@@ -85,7 +89,8 @@ class SaveData:
 			rgb = frames.get_color_frame()
 
 			## Get timestamp from the socket 
-			ts = self.client.send_data('ts')			
+			ts = self.client.send_data('ts')
+			if(not ts): continue
 			
 			if(depth):
 				## Note: TODO: Need to convert to np.uint8 because VideoRecorder can NOT save np.uint16 grayscale images. 

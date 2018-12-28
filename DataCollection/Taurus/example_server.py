@@ -7,6 +7,9 @@ import time
 
 from CustomSocket import Server
 
+SUBJECT_ID = 'S1'
+TRIAL_ID = 'T1'
+
 class ChildServer(Server):
 	def __init__(self, tcp_ip, port):
 		Server.__init__(self, tcp_ip, port)
@@ -17,11 +20,13 @@ class ChildServer(Server):
 			if(not self.connect_status): self.wait_for_connection()
 			try:
 				data = self.client.recv(self.buffer_size)
-				# print(data)
-				ts = str(time.time())
-				if(len(data) != 0): self.client.send(ts.encode('ASCII'))
-				else: self.client.send(b'False')
-				# time.sleep(0.5)
+				if(data == 'info'):
+					info = ','.join([SUBJECT_ID, TRIAL_ID])
+					self.client.send(info)
+				else:
+					ts = str(time.time())
+					if(len(data) != 0 and data == 'ts'): self.client.send(ts.encode('ASCII'))
+					else: self.client.send(b'False')
 			except Exception as exp:
 				print(exp)
 				print('Connection Closed')
@@ -30,7 +35,7 @@ class ChildServer(Server):
 				if(only_once): break
 
 if(__name__ == '__main__'):
-	tcp_ip = 'localhost'
-	tcp_port = 5000
+	tcp_ip = 'localhost'# '192.168.1.118'
+	tcp_port = 10000
 	server = ChildServer(tcp_ip, tcp_port)
 	server.run()
