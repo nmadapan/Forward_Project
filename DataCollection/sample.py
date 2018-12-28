@@ -1,11 +1,16 @@
-import cv2
+import numpy as np
 
-cv2.namedWindow('Hello')
+a = [False, False, False]
 
-while True:
-	ax = cv2.waitKey(1)
-	if(ax != -1):
-		print ax
-	if(ax == ord('q')):
-		cv2.destroyAllWindows()
-		break
+print np.max(a)
+
+# import cv2
+# cv2.namedWindow('Hello')
+
+# while True:
+# 	ax = cv2.waitKey(1)
+# 	if(ax != -1):
+# 		print ax
+# 	if(ax == ord('q')):
+# 		cv2.destroyAllWindows()
+# 		break

@@ -7,10 +7,27 @@ import os, sys, glob, time
 from os.path import join, basename, dirname, splitext
 from copy import copy, deepcopy
 from threading import Thread
+import argparse
 
 ## External libraries
 import cv2
 import numpy as np
+
+'''
+Requirements:
+	* Python 2.7
+	* OpenCV: 3.2.0
+
+How to run:
+	* Option 1:
+		python AnnotationTool.py -v {path to video} -w {folder to place annotation files}
+	* Option 2:
+		Change the paths in this file in the main function :)
+
+Description:
+	Running this file opens two windows: tkinter window (tk) and opencv display window (cv).
+	tk window consists of the buttons to control and annotate the video displayed on cv window
+'''
 
 class Annotator(object):
 	def __init__(self):
@@ -31,10 +48,13 @@ class Annotator(object):
 		##################################
 		self.pause = 'Pause'
 		self.select = 'Select'
+		self.slow = '0.5x'
+		self.fast = '2x'
 		self.forward = 'Forward'
 		self.backward = 'Backward'
 		self.save = 'Save'
-		self.vid_control_buttons = [self.pause, self.select, self.forward, self.backward, self.save]
+		self.clear = 'Delete'
+		self.vid_control_buttons = [self.pause, self.select, self.slow, self.fast, self.forward, self.backward, self.save, self.clear]
 		self.button_obj_vid_list = [] # Updated by a call to run()
 
 		############################
@@ -85,6 +105,8 @@ class Annotator(object):
 		for bobj in self.button_obj_surg_list:
 			name, status = self.get_button_status(bobj)
 			dt[name] = status == 'sunken'
+		name, status = self.get_button_status(self.success_button_obj)
+		dt[name] = status == 'sunken'
 		return dt
 
 	def run(self):
@@ -99,12 +121,13 @@ class Annotator(object):
 		self.master.mainloop()
 
 class VideoDisplay(object):
-	def __init__(self, vpath, write_fpath, title = 'Frame', fowrard_const = 30):
+	def __init__(self, vpath, write_fpath, title = 'Frame', fowrard_const = 30, fps = 30):
 		self.vpath = video_path
 		self.write_fpath = write_fpath
 		self.window_title = title
 		cv2.namedWindow(self.window_title)
 		self.fconst = fowrard_const
+		self.fps = fps
 
 		self.vcap = cv2.VideoCapture(self.vpath)
 		self.num_frames = self.vcap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -130,13 +153,61 @@ class VideoDisplay(object):
 		if(cur_frame_count > self.num_frames): cur_frame_count = self.num_frames
 		elif(cur_frame_count < 0): cur_frame_count = 0
 		self.vcap.set(cv2.CAP_PROP_POS_FRAMES, cur_frame_count)
+		return cur_frame_count
+
+	def put_text(self, frame, print_str, show = False):
+		cv2.putText(frame, print_str, (frame.shape[1]/5, 50), \
+		cv2.FONT_HERSHEY_SIMPLEX, 0.6, (120,50,220), 1,cv2.LINE_AA)
+		if(show):
+			cv2.imshow(self.window_title, frame)
+
+	def put_status(self, frame, frame_id, show = False):
+		print_str = str(int(frame_id)) + ' / ' + str(int(self.num_frames))
+		cv2.putText(frame, print_str, (frame.shape[1]/5, 200), \
+		cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,50,220), 1,cv2.LINE_AA)
+		if(show): cv2.imshow(self.window_title, frame)
+
+	def put_surgemes(self, frame, frame_id, selected_frame_ids, selected_surgemes, show = False):
+		if(len(selected_surgemes) == 0 or len(selected_frame_ids) < 2): return
+		sframe_ids = np.array(map(int, selected_frame_ids))
+		if(sframe_ids.size % 2 == 1): sframe_ids = sframe_ids[:-1]
+		sframe_ids = np.reshape(sframe_ids, (-1, 2))
+		flags = []
+		for arr in sframe_ids:
+			temp = (frame_id >= arr[0] and frame_id <= arr[1])
+			flags.append(temp)
+		if(len(flags) > 0):
+			print_str = ' '.join(map(str, np.array(selected_surgemes)[flags].tolist()))
+			cv2.putText(frame, print_str, (frame.shape[1]/5, 300), \
+			cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255,50,220), 1,cv2.LINE_AA)
+		if(show): cv2.imshow(self.window_title, frame)
+
+	def remove_surgeme(self, frame_id, selected_frame_ids, selected_surgemes):
+		mod_frame_ids = selected_frame_ids
+		mod_surgemes = selected_surgemes
+		if(len(mod_surgemes) == 0 or len(mod_frame_ids) < 2):
+			return mod_frame_ids, mod_surgemes
+		sframe_ids = np.array(map(int, mod_frame_ids))
+		if(sframe_ids.size % 2 == 1): sframe_ids = sframe_ids[:-1]
+		sframe_ids = np.reshape(sframe_ids, (-1, 2))
+		flags = []
+		for arr in sframe_ids:
+			temp = (frame_id >= arr[0] and frame_id <= arr[1])
+			flags.append(temp)
+		if(np.max(flags)):
+			rem_id = np.argmax(flags)
+			mod_frame_ids = np.delete(sframe_ids, rem_id, 0).flatten().tolist()
+			del mod_surgemes[rem_id]
+		return mod_frame_ids, mod_surgemes
 
 	def run(self, title = 'Frame'):
 		close_flag = True
 		pause_flag = False
 		prev_status = None
-		fl_forward = 0
-		fl_backward = 0
+
+		fl_count = 0
+		print_str = ''
+
 		frame_count = 0
 
 		time_to_select_surgeme = False
@@ -145,6 +216,8 @@ class VideoDisplay(object):
 		selected_surgemes = []
 
 		while close_flag:
+			frame_count = self.vcap.get(cv2.CAP_PROP_POS_FRAMES)
+
 			## Check Tkinter status
 			try:
 				status = self.ann_obj.get_status()
@@ -160,31 +233,45 @@ class VideoDisplay(object):
 				ret, frame = self.vcap.read()
 				if(ret):
 					frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5)
-					if(fl_forward > 0):
-						cv2.putText(frame, '>>>>', (frame.shape[1]/5, 50), \
-						cv2.FONT_HERSHEY_SIMPLEX, 0.5, (120,50,220),2,cv2.LINE_AA)
-						fl_forward -= 1
-					if(fl_backward > 0):
-						cv2.putText(frame, '<<<<', (frame.shape[1]/5, 50), \
-						cv2.FONT_HERSHEY_SIMPLEX, 0.5, (120,50,220),2,cv2.LINE_AA)
-						fl_backward -= 1
-					cv2.imshow(self.window_title, frame)
+					if(fl_count > 0):
+						self.put_text(frame, print_str)
+						fl_count -= 1
 				else:
 					self.vcap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+					continue
 
 			## Pause flag
 			pause_flag = status[self.ann_obj.pause]
 			if(time_to_select_surgeme): pause_flag = True
+			if(pause_flag and (not time_to_select_surgeme)):
+				self.put_text(frame, '| |')
 
 			## Forward flag
 			if(status[self.ann_obj.forward] != prev_status[self.ann_obj.forward]):
 				self.move(self.fconst)
-				fl_forward = self.fconst / 2
+				print_str = '>>>>'
+				fl_count = self.fconst / 2
 
 			## Backward flag
 			if(status[self.ann_obj.backward] != prev_status[self.ann_obj.backward]):
 				self.move(-1 * self.fconst)
-				fl_backward = self.fconst / 2
+				print_str = '<<<<'
+				fl_count = self.fconst / 2
+
+			## Slow or fast
+			if(status[self.ann_obj.slow] != prev_status[self.ann_obj.slow]):
+				self.fps = np.clip(self.fps / 2, 1, 240)
+				print_str = '0.5x - ' + str(self.fps) + ' fps'
+				fl_count = self.fconst / 4
+			if(status[self.ann_obj.fast] != prev_status[self.ann_obj.fast]):
+				self.fps = np.clip(self.fps * 2, 1, 240)
+				print_str = '2x - ' + str(self.fps) + ' fps'
+				fl_count = self.fconst / 4
+
+			## Clear flag
+			if(status[self.ann_obj.clear] != prev_status[self.ann_obj.clear]):
+				selected_frame_ids, selected_surgemes = \
+				self.remove_surgeme(frame_count, selected_frame_ids, selected_surgemes)
 
 			if((len(selected_frame_ids)%2 == 0) and (len(selected_frame_ids) > 0) \
 			and (len(selected_surgemes) < len(selected_frame_ids)/2)):
@@ -195,14 +282,15 @@ class VideoDisplay(object):
 				flags = []
 				for sgb in self.ann_obj.surgeme_buttons:
 					flags.append(status[sgb] != prev_status[sgb])
+				# TODO! add the success flag
+				# succ_flag = (status[self.ann_obj.success_button] != \
+				# 			prev_status[self.ann_obj.success_button])
 				if(np.max(flags)):
 					selected_surgemes.append(self.ann_obj.surgeme_buttons[np.argmax(flags)])
 					time_to_select_surgeme = False
 					print selected_surgemes
 
-				cv2.putText(frame, 'Select a surgeme', (frame.shape[1]/5, 50), \
-				cv2.FONT_HERSHEY_SIMPLEX, 1, (120,50,220),1,cv2.LINE_AA)
-				cv2.imshow(self.window_title, frame)
+				self.put_text(frame, 'Select a surgeme')
 
 			if(not time_to_select_surgeme):
 				## Select flag
@@ -214,28 +302,52 @@ class VideoDisplay(object):
 					## TODO: Write the success or failure to the file
 					print 'Writing to ', self.write_fpath
 					with open(self.write_fpath, 'w') as fp:
-						wstr = ','.join(map(str, map(int,selected_frame_ids))) + '\n'
-						wstr += ','.join(selected_surgemes)
+						temp = np.array(map(int, selected_frame_ids))
+						temp = np.reshape(temp, (-1, 2))
+						wstr = ''
+						for _idx, pair in enumerate(temp):
+							wstr += ' '.join(map(str, pair.tolist()+[selected_surgemes[_idx]])) + '\n'
 						fp.write(wstr)
 
 			## Quitting condition
-			key = cv2.waitKey(1000/30)
+			key = cv2.waitKey(1000/self.fps)
 			if(key == 91):
-				fl_backward += 10
+				fl_count = self.fconst / 2
+				print_str = '<<'
 				self.move(-1 * 10)
 			if(key == 93):
-				fl_forward += 10
+				fl_count = self.fconst / 2
+				print_str = '>>'
 				self.move(10)
+
+			self.put_surgemes(frame, frame_count, selected_frame_ids, selected_surgemes)
+			self.put_status(frame, frame_count, show = True)
+			prev_status = deepcopy(status)
 
 			if key == ord('q'):
 				cv2.destroyAllWindows()
 				close_flag = False
 				self.vcap.release()
 
-			frame_count = self.vcap.get(cv2.CAP_PROP_POS_FRAMES)
-			prev_status = deepcopy(status)
-
 if __name__ == '__main__':
 	video_path = r'E:\AHRQ\AHRQ-Gesture-Videos\AHRQ_Study_II_RGB_Videos\Subject_1.mp4'
-	write_fpath = 'sample.txt'
+	base_write_path = r'E:\Forward_Project\DataCollection'
+
+	##########################
+	#####   PARSING       ####
+	##########################
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-v", "--video_path",
+						default = video_path,
+						help=("Absolute path to the video."))
+	parser.add_argument("-w", "--base_write_path",
+						default = base_write_path,
+						help=("Base write path"))
+	args = vars(parser.parse_args())
+	video_path = args['video_path']
+	base_write_path = args['base_write_path']
+
+	write_fname = splitext(basename(video_path))[0] + '_annot.txt'
+	write_fpath = join(base_write_path, write_fname)
+
 	vid_obj = VideoDisplay(video_path, write_fpath)
