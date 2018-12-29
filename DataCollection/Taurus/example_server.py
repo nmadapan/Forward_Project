@@ -35,7 +35,7 @@ class ChildServer(Server):
 				if(only_once): break
 
 if(__name__ == '__main__'):
-	tcp_ip = 'localhost'# '192.168.1.118'
+	tcp_ip = '192.168.1.118'
 	tcp_port = 10000
 	server = ChildServer(tcp_ip, tcp_port)
 	server.run()

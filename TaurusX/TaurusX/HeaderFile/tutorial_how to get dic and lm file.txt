@@ -1,0 +1,5 @@
+1. go to   http://www.speech.cs.cmu.edu/tools/lmtool.html              (clikc on lmtool)
+2. upload a txt file, each line for a word, all in capital (I am not sure if it's necessary to do such format..)
+3. download the lm and dic files in the next page 
+4. put the downloaded file in this folder
+5. change the name to 1.dic and 1.lm
