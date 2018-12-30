@@ -31,7 +31,7 @@ DEPTH_SIZE = (640, 480)
 RGB_SIZE = (1920, 1080)
 FPS = 30
 
-TCP_IP = 'localhost' #'192.168.1.118'
+TCP_IP = '192.168.1.118'
 PORT = 10000
 
 class SaveData:
