@@ -1,4 +1,7 @@
 #include "TaurusX.h"
+#include <list>
+#include <chrono>
+#include <time.h>
 
 TaurusX taurus;
 LeapCoordinates tdObj;
@@ -1281,14 +1284,23 @@ void* Agent2Master(void* info)
 {
 	//***********************************************************************************************************
 	// to extract the char* from the void pointer, and use it as the name for the interface data log file
-	string &logfilename = *(static_cast <std::string*> (info));
-	char* ch_logfilename_hap = new char[40];
-	strcpy (ch_logfilename_hap, logfilename.c_str());
-	strcat(ch_logfilename_hap, "_haptic.txt");
-	char* name_with_path = new char[50];
-	strcpy(name_with_path, "log/");
-	strcat(name_with_path, ch_logfilename_hap);
-	ch_logfilename_hap = name_with_path;
+	string &left_logfilename = *(static_cast <std::string*> (info));
+	string &right_logfilename = *(static_cast <std::string*> (info));
+	char* ch_logfilename_hap_left = new char[50];
+	char* ch_logfilename_hap_right = new char[50];
+	strcpy (ch_logfilename_hap_left, left_logfilename.c_str());
+	strcat(ch_logfilename_hap_left, "_left_kinematics.txt");
+	strcpy (ch_logfilename_hap_right, right_logfilename.c_str());
+	strcat(ch_logfilename_hap_right, "_right_kinematics.txt");
+	char* left_name_with_path = new char[60];
+	char* right_name_with_path = new char[60];
+	strcpy(left_name_with_path, "DataCollection/");
+	strcat(left_name_with_path, ch_logfilename_hap_left);
+	strcpy(right_name_with_path, "DataCollection/");
+	strcat(right_name_with_path, ch_logfilename_hap_right);
+	ch_logfilename_hap_left = left_name_with_path;
+	ch_logfilename_hap_right = right_name_with_path;
+	const char * ch_logfilenames[] = {ch_logfilename_hap_left, ch_logfilename_hap_right};
 
 	//char* ch_logfilename_warn = new char[40];
 	//strcpy (ch_logfilename_warn, logfilename.c_str());
@@ -1368,22 +1380,78 @@ void* Agent2Master(void* info)
 			}*/
 			// ******************** Experiment with TipForceVecotr***********************//
 
+			/***** HAPTIC PACKET  *********
+			unsigned short int JointsInLimits[NumberOfArms]; // If a bit is set then current joint value is within the valid range for that joint
+			int x[NumberOfArms]; // Microns
+			int y[NumberOfArms]; // Microns
+			int z[NumberOfArms]; // Microns
+			int yaw[NumberOfArms]; // Radians * 1e6
+			int pitch[NumberOfArms]; // Radians * 1e6
+			int roll[NumberOfArms]; // Radians * 1e6
+			double grasp[NumberOfArms]; //100.0 is open, 0 closed
+			double TipPose[NumberOfArms][4][4]; // The 16 elements of a tip-pose matrix (inches and radians)
+			double toolEndPoint[NumberOfArms][3];  // X,Y,Z coords of the true end-point of the tool (useful for measuring distances between the tips
+			double stiffness[NumberOfArms][6];
+			Point3D TipPosition[NumberOfArms]; // The 3 elements of a tip position vector (microns) 
+			********************************/
+			
 			bool record_trajectory = 1;
 			if(record_trajectory)
-			{
-				std::ofstream trajectory_writer;
-				trajectory_writer.open(ch_logfilename_hap, ios::app); 
-				if (trajectory_writer.is_open())
+			{	
+				std::ofstream trajectory_writer_left;
+				std::ofstream trajectory_writer_right;
+				trajectory_writer_left.open(ch_logfilenames[0], ios::app); 
+				trajectory_writer_right.open(ch_logfilenames[1], ios::app); 
+				if (trajectory_writer_left.is_open() && trajectory_writer_right.is_open())
 				{
-					string currentTime = currentDateTime();
+					double fractional_seconds_since_epoch
+					= std::chrono::duration_cast<std::chrono::duration<double>>(
+					std::chrono::system_clock::now().time_since_epoch()).count();
+					char string_time[50];
+					sprintf(string_time,"%lf ", fractional_seconds_since_epoch);
 					for (int arm = 0; arm<2;arm++)
 					{
-						trajectory_writer << currentTime << ' ' << arm << ' ';
-						for (int i=0;i<4;i++)
-							for (int j=0;j<4;j++)
-								trajectory_writer<<haptic_packet.TipPose[arm][i][j]<<' ';
-						trajectory_writer<<haptic_packet.grasp[arm]<<' '<<std::endl;
-						printf("THE ARM %d has a n opening of %f", arm, haptic_packet.grasp[arm]);
+						/***********************
+						***** LEFT GRIPPER *****
+						***********************/
+						if (arm==0){
+							// write the current timestamp
+							trajectory_writer_left << string_time;
+							// write the rotation matrix
+							for (int i=0;i<3;i++)
+								for (int j=0;j<3;j++)
+									trajectory_writer_left<<haptic_packet.TipPose[arm][i][j]<<' ';
+							// write the translations
+							for (int i=0;i<3;i++) 
+								trajectory_writer_left<<haptic_packet.TipPose[arm][i][3]<<' ';
+							// write the x,y,z
+							trajectory_writer_left<<haptic_packet.x[arm] <<' '<<haptic_packet.y[arm] <<' '<<haptic_packet.z[arm] <<' ';
+							// write the pitch, yaw and roll
+							trajectory_writer_left<<haptic_packet.pitch[arm] <<' '<<haptic_packet.yaw[arm] <<' '<<haptic_packet.roll[arm] <<' ';
+							// write the gripper status
+							trajectory_writer_left<<haptic_packet.grasp[arm]<<std::endl;
+						/***********************
+						***** RIGHT GRIPPER *****
+						***********************/
+						} else {
+							// write the current timestamp
+							trajectory_writer_right << string_time;
+							// write the rotation matrix
+							for (int i=0;i<3;i++)
+								for (int j=0;j<3;j++)
+									trajectory_writer_right<<haptic_packet.TipPose[arm][i][j]<<' ';
+							// write the translations
+							for (int i=0;i<3;i++) 
+								trajectory_writer_right<<haptic_packet.TipPose[arm][i][3]<<' ';
+							// write the x,y,z
+							trajectory_writer_right<<haptic_packet.x[arm] <<' '<<haptic_packet.y[arm] <<' '<<haptic_packet.z[arm] <<' ';
+							// write the pitch, yaw and roll
+							trajectory_writer_right<<haptic_packet.pitch[arm] <<' '<<haptic_packet.yaw[arm] <<' '<<haptic_packet.roll[arm] <<' ';
+							// write the gripper status
+							trajectory_writer_right<<haptic_packet.grasp[arm]<<std::endl;
+						
+						}
+						//printf("THE ARM %d has a n opening of %f", arm, haptic_packet.grasp[arm]);
 						//trajectory_writer<<20<<' '<<std::endl; //I want the gripper to be always closed, thus always writing 20
 					}
 				}
