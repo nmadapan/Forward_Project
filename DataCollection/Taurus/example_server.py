@@ -7,8 +7,8 @@ import time
 
 from CustomSocket import Server
 
-SUBJECT_ID = 'S4'
-TRIAL_ID = 'T2'
+SUBJECT_ID = 'S8'
+TRIAL_ID = 'T4'
 
 class ChildServer(Server):
 	def __init__(self, tcp_ip, port):
