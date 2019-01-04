@@ -11,6 +11,7 @@ import cv2
 
 ###########################################################################
 ## Class MyFrame
+## Framework code generated with wxFormBuilder : http://www.wxformbuilder.org/
 ## You need python3 and wxPython, opencv-python module
 ## wxPython module: pip install wxPython
 ## Before closing the window, you'd better pause the video.
@@ -48,8 +49,7 @@ class AnnotationTool2 ( wx.Frame ):
 		self.Inform_bar.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_MENU ) )
 		
 		bSizer2.Add( self.Inform_bar, 3, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
-		
-		
+			
 		bSizer1.Add( bSizer2, 1, wx.EXPAND, 5 )
 		
 		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"PlayVideo" ), wx.VERTICAL )
