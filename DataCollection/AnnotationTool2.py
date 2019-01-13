@@ -61,7 +61,7 @@ class AnnotationTool2 ( wx.Frame ):
 		bSizer2.Add( self.Inform_bar, 3, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
 				
 		bSizer1.Add( bSizer2, 0, wx.EXPAND, 5 )		
-		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"PlayVideo" ), wx.VERTICAL )		
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"" ), wx.VERTICAL )		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_bitmap = wx.StaticBitmap( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.NullBitmap, \
