@@ -61,10 +61,8 @@ class AnnoCheckTool ( wx.Frame ):
 		
 		bSizer2.Add( self.Inform_bar, 3, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
 				
-		bSizer1.Add( bSizer2, 0, wx.EXPAND, 5 )
-		
-		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"PlayVideo" ), wx.VERTICAL )
-		
+		bSizer1.Add( bSizer2, 0, wx.EXPAND, 5 )		
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"PlayVideo" ), wx.VERTICAL )		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_bitmap = wx.StaticBitmap( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.NullBitmap, \
@@ -245,15 +243,14 @@ class AnnoCheckTool ( wx.Frame ):
 		    IsAgree = 'N' if RadioInd else 'Y'
 		    Comment = self.m_Comment.GetLineText(0)
 		    if Comment:
-		        OneAnnoCheck = Selected + ' ' + IsAgree + ' ' +  Comment + '\n'
-		        if OneAnnoCheck not in self.AnnoMark:
-		            self.AnnoMark.append(OneAnnoCheck)
-		        else:
-		            self.Inform_bar.SetValue('The record was added, do not add again!')      
+		        OneAnnoCheck = Selected + ' ' + IsAgree + ' ' +  Comment + '\n'   
 		    else:
 		        OneAnnoCheck = Selected + ' ' + IsAgree + '\n'
-		        if OneAnnoCheck not in self.AnnoMark:
-		            self.AnnoMark.append(OneAnnoCheck)        
+                
+		    if OneAnnoCheck not in self.AnnoMark:
+		        self.AnnoMark.append(OneAnnoCheck)  
+		    else:
+		        self.Inform_bar.SetValue('The record has been added, do not add again!')      
 		    self.MyFileWriting(str(self.AnnoFilePath[0]) + '_annotCheck.txt')  
 		    self.DisplayAnnotCheck()
 		else:
