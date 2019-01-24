@@ -10,12 +10,17 @@ import wx.xrc
 import cv2
 
 ##################################################################################################
-## Class MyFrame
+## Class AnnotationTool2
 ## Framework code generated with wxFormBuilder : http://www.wxformbuilder.org/
 ## You need python3 and wxPython, opencv-python module
 ## wxPython module: pip install wxPython
 ## The size of display area can be modified by setting VideoDisplaySize parameter in main function
 ## The surgeme list can also be easily editted.
+##
+## Run this .py file, after entering the GUI successfully, press "load video" button.
+## Select an .avi video, for other format, you need to change 
+##		self.wildcard='Video Files(*.avi)|*.avi|All Files(*.*)|*.*'   
+##      above two avi to another video format that opencv supports.
 ## Left and right arrow on keyboard can be used to show the last and next frame. 
 ## Create annotation button is not necessary before 'write to file' action, but if you would like 
 ## to edit the annotation, you can create it and then edit in the text area.
@@ -24,10 +29,11 @@ import cv2
 
 class AnnotationTool2 ( wx.Frame ):
     
-	def __init__( self, parent, video_path, write_path, VideoDisplaySize ):
+	def __init__( self, parent, VideoDisplaySize ):
         # Define surgeme list and initial parameters
 		self.WindowWidth = VideoDisplaySize[0] + 440
 		self.WindowHeight = VideoDisplaySize[1] + 190
+		self.wildcard='Video Files(*.avi)|*.avi|All Files(*.*)|*.*'     
         
 		self.ImWidth = VideoDisplaySize[0]
 		self.ImHeight = VideoDisplaySize[1]
@@ -35,8 +41,8 @@ class AnnotationTool2 ( wx.Frame ):
 		self.s_f = ['Success', 'Fail']
 		self.FrameNumber = 0
 		self.FrameTime = 33
-		self.video_path = video_path
-		self.write_path = write_path
+		self.video_path = ''
+		self.write_path = ''
 		self.OneRow = []
 		self.IndexSurgeme = 0
 		self.IndexSF = 0     
@@ -61,7 +67,7 @@ class AnnotationTool2 ( wx.Frame ):
 		bSizer2.Add( self.Inform_bar, 3, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
 				
 		bSizer1.Add( bSizer2, 0, wx.EXPAND, 5 )		
-		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"" ), wx.VERTICAL )		
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"PlayVideo" ), wx.VERTICAL )		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.m_bitmap = wx.StaticBitmap( sbSizer3.GetStaticBox(), wx.ID_ANY, wx.NullBitmap, \
@@ -194,6 +200,7 @@ class AnnotationTool2 ( wx.Frame ):
 		self.m_buttonNext.Bind( wx.EVT_KEY_DOWN, self.KeyboardEvent )
 		self.m_buttonBefore.Bind( wx.EVT_KEY_DOWN, self.KeyboardEvent )
 		self.Bind( wx.EVT_KEY_DOWN, self.KeyboardEvent )	        
+
         
         #Set flags
 		self.PAUSE_FLAG = False
@@ -207,19 +214,30 @@ class AnnotationTool2 ( wx.Frame ):
         
 	# Virtual event handlers, overide them in your derived class
 	def OnLoad( self, event ):
-		self.PROCESSING_FLAG = True
-		self.videoCapture = cv2.VideoCapture(self.video_path)
-		if(self.videoCapture == None):
-		    wx.SafeShowMessage('start', 'Open Failed')
-		    return
-		self.TotalFrame = self.videoCapture.get(cv2.CAP_PROP_FRAME_COUNT)
-		self.m_slider.SetMax(int(self.TotalFrame))
-		self.fps = self.videoCapture.get(cv2.CAP_PROP_FPS)
-		self.FrameTime = 1000 / self.fps
-		self.m_timer1.Start(self.FrameTime)
-		self.Inform_bar.SetValue('Video Loaded : ' + self.video_path)
-		event.Skip()
-	
+		dlg = wx.FileDialog(self, message='Open Video File', 
+                            defaultDir='',
+                            defaultFile='', 
+                            wildcard = self.wildcard, 
+                            style = wx.FD_OPEN)
+        
+		if dlg.ShowModal() == wx.ID_OK:
+		    self.video_path = dlg.GetPath()
+		    dlg.Destroy()
+		    fpath = self.video_path.split('.')
+		    self.write_path = fpath[0] + '_annot.txt'
+		    self.PROCESSING_FLAG = True
+		    self.videoCapture = cv2.VideoCapture(self.video_path)
+		    if(self.videoCapture == None):
+		        wx.SafeShowMessage('start', 'Open Failed')
+		        return
+		    self.TotalFrame = self.videoCapture.get(cv2.CAP_PROP_FRAME_COUNT)
+		    self.m_slider.SetMax(int(self.TotalFrame))
+		    self.fps = self.videoCapture.get(cv2.CAP_PROP_FPS)
+		    self.FrameTime = 1000 / self.fps
+		    self.m_timer1.Start(self.FrameTime)
+		    self.Inform_bar.SetValue('Video Loaded : ' + self.video_path)
+		    event.Skip()  
+        
     # Select the start and end frame of a surgeme
 	def ToggleSaveFrame( self, event ):
 		if self.PROCESSING_FLAG:
@@ -422,11 +440,8 @@ class AnnotationTool2 ( wx.Frame ):
 if __name__ =='__main__':
     # The size of display area and the path of video file, the annotation file will be in the same dictionary will the video file
     VideoDisplaySize = [960, 540]
-    video_path = r'C:\Users\jyoth\OneDrive\Desktop\Forward\Data Collection\Taurus\data\S3\S3_T1_color.avi'
-    fpath = video_path.split('.')
-    write_path = fpath[0] + '_annot.txt'
     app = wx.App()
-    frame = AnnotationTool2(None, video_path, write_path, VideoDisplaySize)
+    frame = AnnotationTool2(None, VideoDisplaySize)
     frame.Show()
     app.MainLoop()
     del app
