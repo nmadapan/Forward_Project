@@ -7,8 +7,8 @@ import time
 
 from CustomSocket import Server
 
-SUBJECT_ID = 'S1'
-TRIAL_ID = 'T1'
+SUBJECT_ID = 'S8'
+TRIAL_ID = 'T4'
 
 class ChildServer(Server):
 	def __init__(self, tcp_ip, port):
@@ -16,6 +16,7 @@ class ChildServer(Server):
 		
 	def run(self, only_once = False):
 		print('--------- Server ---------')
+		print("SUBJECT:", SUBJECT_ID, TRIAL_ID)
 		while True:
 			if(not self.connect_status): self.wait_for_connection()
 			try:
@@ -35,7 +36,7 @@ class ChildServer(Server):
 				if(only_once): break
 
 if(__name__ == '__main__'):
-	tcp_ip = 'localhost'# '192.168.1.118'
+	tcp_ip = '192.168.1.118'
 	tcp_port = 10000
 	server = ChildServer(tcp_ip, tcp_port)
 	server.run()

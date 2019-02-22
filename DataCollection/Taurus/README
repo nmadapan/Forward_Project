@@ -1,0 +1,69 @@
+***For each Subject Subject x and a Task j there will be a folder in the Data collection in the format Sx. Were x= 1...8, and j=1...6.
+
+***Each data folder Sx contains the following:
+Every file follows a CSV format, where the separator is a space. 
+
+########################
+# The kinematics files #
+########################
+There will be one for each gripper, named:
+	SxTj_kinematics_left.txt
+	SxTk_ninematics_right.txt
+
+	IMPORTANT: the data is recorded ONLY when the foot pedal was pressed, meaning, only when the robot whas active or in movement. If the robot was inactive, no kinematic data is recorded.
+
+	These are the elements in each line or data frame:
+
+	* ut: unix time stamp
+	* Tip pose matrix elements (in inches and radians):
+		rot_00    rot_01    rot_02    tr_x
+		rot_10    rot_11    rot_12    tr_y
+		rot_20    rot_21    rot_22    tr_z
+		0         0         0         1
+
+	* Absolute pose of the tip in microns (with respect to the robot's origin):
+	x: absolute x pose of the tip
+	y: absolute y pose of the tip
+	z: absolute z pose of the tip
+
+	* pitch: pitch  of the robot's tip ( Radians * 1e6)
+	* yaw: roll  of the robot's tip ( Radians * 1e6)
+	( roll: roll  of the robot's tip ( Radians * 1e6)
+
+	* gs: state of the gripper. A floating point that ranges from 30 (completely closed) to 100 (comppletely open) 
+
+	Each line in this file has the following format:
+
+	ut rot_00 rot_01 rot_02 rot_10 rot_11 rot_12 rot_20 rot_21 rot_22 tr_x tr_y tr_z x y z gs
+
+###################
+# The Color file  #
+###################
+	There will be one for each subject and task named:
+		* SxTj_color.avi
+		
+		This file will contain a color video with the entire task.
+
+		There will be a corresonding file named:
+		* SxTj_color_ts.txt
+		
+		This file will have the unix timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)   
+
+###################
+# The Color file  #
+###################
+	There will be one for each subject and task named:
+		* SxTj_depth.avi
+		
+		This file will contain a depth video with the entire task.
+
+		There will be a corresonding file named:
+		* SxTj_depth_ts.txt
+		
+		This file will have the unix timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)   
+
+IMPORTANT IMAGE NOTE:
+The camera is oposite to the robot. Thus the percieved camera "Left" and "Right" are inverted from the robot's left and right.
+The robot's left and right are the ones that are used as a reference in the setup
+
+
