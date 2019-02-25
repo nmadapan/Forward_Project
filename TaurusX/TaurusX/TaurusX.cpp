@@ -1303,7 +1303,7 @@ void* Agent2Master(void* info)
 	const char * ch_logfilenames[] = {ch_logfilename_hap_left, ch_logfilename_hap_right};
 
 	//char* ch_logfilename_warn = new char[40];
-	//strcpy (ch_logfilename_warn, logfilename.c_str());
+	//strcpy (ch_logfilename_warn, logfilename.c_str0-
 	//strcat(ch_logfilename_warn, "_warning.txt");
 	//char* name_with_path2 = new char[50];
 	//strcpy(name_with_path2, "log/");
