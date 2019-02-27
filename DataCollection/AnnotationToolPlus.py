@@ -2,7 +2,7 @@
 """
 Created on Sun Jan 27 19:31:29 2019
 
-@author: Xingguang Zhang
+@author: Xingguang Zhang & Jyothsna P B
 """
 
 import wx
