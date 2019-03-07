@@ -1,0 +1,175 @@
+#M7Master2 Properties file
+
+#------------------------- Remote System Identification
+
+# The next name must be one defined in TeleopSystemId.h (eg TaurusRemote or AtlasRemote)
+RemoteSystemName = Taurus
+#RemoteSystemName = Atlas7Dof
+
+#------------------------- End Remote System Identification
+
+
+#------------------------- Master and Agent IP Address Information ------------------------------------------------
+#
+#************* The IP addresses and ports
+
+# The MasterIPAddress is the address that the master listens for the agent on
+#MasterIPAddress = 127.0.0.1
+MasterIPAddress = 192.168.1.118
+MasterPort = 13834
+
+# The AgentIPAddress is the address where the master sends the robot commands
+#AgentIPAddress = 127.0.0.1
+AgentIPAddress = 192.168.1.118
+#Port 13832 is intial setup, 8023 is for my program.
+#AgentPort =  13832
+AgentPort =  8023
+
+# If a packet is sent to this port on TaurusAgent then TaurusAgent will exit if this feature is enabled in TaurusAgent (see the comment in TaurusAgent.prp for details)
+KillerSocketPort =  13833
+
+#------------------------- End Master and Agent IP Address Information ------------------------------------------------
+
+#------------------------- IP Address of machine hosting the animation ------------------------------------------------
+
+AnimationIPAddress = 127.0.0.1
+# If AnimationSocketPort is 0, then messages are not sent.
+AnimationSocketPort = 0
+#AnimationSocketPort = 13873
+
+#------------------------------------------------------------------------------------------------------------------
+
+
+#-------------------------- Specify the input devices ----------------------------------
+
+# Only one of these entries should be 1, the other(s) should be 0
+# HID is Haptic Input Device
+UseForceDimension = 0
+UseSimulatedHID = 0
+UseSpaceNavigator = 0
+UseHydra = 1
+
+# RecordForceDimension tells the program to record the data from the force dimension input 
+# for future playback (as a simulated input; UseSimulatedHID=1).  When using RecordForceDimension, set the 
+# "UseXXX" values to zero
+RecordForceDimension = 0
+
+LeftHIDInputFile = FDLeft_1.txt
+RightHIDInputFile = FDRight_1.txt
+
+# RecordFootPedal tells the program to use a regular footpedal and to record the data from the pedal 
+# for future playback (as a simulated footpedal).
+
+# Only one of these entries should be 1, the other(s) should be 0
+UseRealFootPedal = 1
+RecordFootPedal = 0
+UseSimulatedPedal = 0
+UseHydraPedal = 0
+
+# filename of pedal data, if using simulated pedal
+FootPedalInputFile = Pedal_1.txt
+
+#-------------------------- End specify the input devices ----------------------------------
+
+
+
+#-------------------------- Specify operator viewing angle ----------------------------------
+# screen view angle in degrees --- should be in range [0,90]
+# ScreenViewAngle = 45 for taurus immersive OCU; 10 for laptop OCU
+ScreenViewAngle = 10
+
+#-------------------------- end specify operator viewing angle ----------------------------------
+
+
+
+#------------------------- Grasp Haptic Force Point
+
+# GraspForceKneePointrefers to a knee in the curve. 
+# For values above the knee point, no force is applied to the gripper. 
+# For values below the knee point, a force is applied that fights the user, pushing the user back toward the knee point
+# This value should corresond to the value in Taurus_B.prp that defines when the jaws touch. If the two
+#  values are different it's OK except the feedback to the operator won't correspond to when the jaws touch.
+GraspForceKneePoint = 30
+
+#------------------------- End Grasp Haptic Force Point
+
+
+#-------------------------- Timer configuration -----------------------------------------
+
+# Master control loop period, milliseconds
+TimerPeriod = 4
+TimerResolution = 0
+DefaultMotionScaleFactor = 1.00
+
+#-------------------------- End Timer configuration --------------------------------------
+
+
+#------------------------- Logging Specifications ------------------------------------------------
+#
+#************* Logs can be written to either a file or to a IP address (socket/port combo).
+#************* Set the port number to 0 to write to a file, otherwise the IP address takes precedence.
+
+#**** Control logging for both file logs and socket logs
+
+# Log level. See log.h for current valid levels 
+# (which are probably ERROR, WARNING, INFO, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4, TRACE). The lower the level logged,
+# the more detail gets logged.
+# Levels below INFO may affect the performance of the software!
+LogLevel = INFO
+
+
+#**** File log information
+# The filename prefix for the file that holds the log output. Log file names will include the date and time (ie. M7Agent_20080317_1159.log)
+# If LogSocketPort is non-zero, then the log will be written to an IP socket, not to a file!
+
+LogFileName = log\M7Master
+
+#**** Socket log information
+UseDatagram = 1
+
+# IP Address of the adapter used to accept socket connections on this  machine.
+LogSocketIP = 127.0.0.1
+
+# IP Port number to use for sending log messages. If this value is 0, the log will be written to a file, not a socket.
+#LogSocketPort = 13803
+LogSocketPort = 0
+
+#*************
+#*************
+#------------------------- End Logging Specifications ------------------------------------------------
+
+
+#------------------------- Haptics Specifications ------------------------------------------------
+
+# A flag the enables or disables haptic force feedback based on position error between master and agent
+UsePositionErrorForHaptics = 1
+
+#------------------------- End Haptics Specifications ------------------------------------------------
+
+
+#------------------------- Operator Ack Specifications ------------------------------------------------
+
+# Define which conditions must be acknowledged by operator before system can continue operations (set to '1' to enable)
+# Note: Systems without a VME intermediary cannot distinguish between comms loss and power failure
+
+EnableOperatorAckRestoreComms = 0
+EnableOperatorAckFailSafeCleared = 0
+EnableOperatorAckPowerRestored = 0
+
+#------------------------- End Operator Ack Specifications ------------------------------------------------
+
+
+#------------------------- Robot Definition ------------------------------------------------
+
+# The name of the robot-definition properties file, and path for the directory containing it
+# Different robot designs can be defined in different properties files. 
+# This is the name of the prp file that defines Taurus configuration
+# NOTE: The master and agent must use the same robot definition file
+
+RobotDefinitionFilePath = TaurusDefinitionFiles
+RobotDefinitionFileName = Taurus_B.prp
+
+
+#------------------------- end Robot Definition ------------------------------------------------
+
+

@@ -1,0 +1,191 @@
+# Properties file for TaurusAgent
+
+# The name of the robot-definition properties file. 
+# Different robot designs can be defined in different properties
+# files. Change the next line to load the appropriate design.
+# The name of the robot-definition properties file  
+RobotDefinitionFilePath = TaurusDefinitionFiles
+
+# The robot definition file (describes robot attributes, camera tilt limits, etc.)
+# NOTE: The master and agent must use the same robot definition file (master uses camera-tilt limits)
+RobotDefinitionFileName = Taurus_B.prp 
+
+# This is the prp file that defines how Taurus moves between Stowed and Ready (Safe) configurations
+# This is the file for when the Taurus stows into (and starts from) limits for joints 1-4
+
+# stow on limits for joints 1-4
+JointConfigurationFileName = TaurusJointConfig_StowOnLimits.prp
+
+# stow in cradle configuration
+#JointConfigurationFileName = TaurusJointConfig_StowInCradle.prp
+# stow in compact configuration
+#JointConfigurationFileName = TaurusJointConfig_StowCompact.prp
+
+
+# Where to place robot for the task at hand (robot world Z axis is down)
+# The location of the robot in the world is not an intrinsic property 
+# of the robot, thus is not in the robot definition file
+
+MountingFlange0 =  0.96593,         0.00000,	 -0.25882,        -2.00000
+MountingFlange1 =  0.00000,         1.00000,      0.00000,         0.00000
+MountingFlange2 =  0.25882,         0.00000,      0.96593,       -10.00000
+MountingFlange3 =  0.00000,         0.00000,      0.00000,         1.00000
+
+#------------------------ Inverse Kinematic Solution Algorithm Configuration ---------------
+# Value must be one of: ArmPainSearch, ArmPseudoInv, ArmPainMin
+
+InverseKinematicSolution = ArmPseudoInv
+
+# pain reduction factor.  
+# Value 0 means use plain vanilla pseudoinverse; Values cannot be negative
+PseudoInvPainFactor = 0.1
+
+#------------------------ End Inverse Kinematic Solution Algorithm Configuration ---------
+
+#----------------------------------- I2C Bus Present? ----------------------------------------
+
+WithI2CP = 0
+
+#----------------------------------- End I2C Bus Present? ----------------------------------------
+
+
+#------------------------ Configure External Control Box and Tools ----------------------------------------
+
+WithExternalControlBox = 0
+ExternalControlBoxNetBurnerIP = 192.168.1.182
+# MaxVel is in RPM
+ExternalTool1MaxVel = 360
+ExternalTool1MinVel = 10
+
+#------------------------ End Configure External Tool ----------------------------------------
+
+
+#------------------------ NetBurner Configuration ---------------
+
+#Set to 1 to interface through the Netburner (cameras and motor controllers will use the Netburner)
+WithNetBurner = 1
+
+# These "Simulate..." values are not required and are only effective when the WithNetBurner value equals 1
+SimulateLeftArm = 0
+SimulateRightArm = 0
+
+# optionally simulate serial comm to cameras
+SimulateCameraComm = 0
+
+# if WithNetBurner is 0, the rest of this Netburner configuration section is ignored.
+
+# The 2nd NetBurner is assumed to be at the NetBurnerIPAddress that
+# follows the value below (ie. 192.168.1.101 if the NetBurnerIPAddress is 192.168.1.100)
+NetBurnerIPAddress = 192.168.1.180
+
+#------------------------ End NetBurner Configuration ---------------
+
+
+#------------------------ Startup Configuration ---------------------
+# If AutoHome is set to 1 (= true), then the system will execute the absolute-encoder-based homing sequence for 
+# the joints of the specified arm that have absolute encoders
+AutoHomeLeftArm = 0
+AutoHomeRightArm = 0
+
+# Set to 1 to initialize the robot encoders with values from persistent storage (i.e., when the robot 
+# joints have not been moved since shutdown).  Set to 0 for initializing in the normal STOWED configuration.
+# NOTE: In the case where you want to start using persistent values, but don't have a file corresponding to the 
+# starting configuration, set WithEncoderPersistValues to 1 and pass the command-line parameter "limits" (no quotes)
+# to TaurusAgent on startup.
+WithEncoderPersistValues = 0
+
+# Startup delay introduces a sleep early in Taurus Agent's startup. Doing so allows peripherals time to boot.
+# The value of StartupDelay is in seconds
+StartupDelay = 0
+
+#------------------------ End Startup Configuration ---------------------
+
+
+#------------------------ Autonomous Stow Configuration ---------------
+
+# All parameters controlling autonomous stow are optional
+
+# Enable (1) or disable (0) the autonomous stow procedure when long-term comms loss is signaled
+UseAutonomousStowOnCommsLoss = 1
+
+# RestorePointMaxInchesPerSec defines the maximum linear rate to be considered stopped
+RestorePointMaxInchesPerSec = 0.2	
+
+# RestorePointMaxDegreesPerSec defines the maximum angular rate to be considered stopped
+RestorePointMaxDegreesPerSec = 2
+
+# RestorePointMessageLevel controls diagnostic messages to the log and TaurusAgent console
+# Allowable values are 0: no messages; 1: change of restore point state only; 2: calculation details
+AutonomousStowConsoleMessageLevel = 0
+
+#------------------------ End Autonomous Stow Configuration ---------------
+
+
+
+#------------------------ Log Configuration ----------------------
+
+#Control logging
+# Log level. See log.h for current valid levels 
+# (which are ERROR, WARNING, INFO, DEBUG, DEBUG1, DEBUG2, DEBUG3, DEBUG4, TRACE). The lower the level logged,
+# the more detail gets logged.
+#LogLevel = TRACE
+LogLevel = INFO
+
+# The filename prefix for the file that holds the log output. Log file names will include the date and time (ie. TaurusAgent_20080317_1159.log)
+LogFileName = log\TaurusAgent
+
+#**** Socket log information
+# IP Address of the machine that has the SocketLogClient (the destination for the UDP packets).
+#LogSocketIP = 192.168.1.118
+LogSocketIP = 127.0.0.1
+
+# 1 if using UDP, 0 if using TCP for socket logging
+UseDatagram = 1
+
+
+# IP Port number to use for sending log messages. If this value is 0, the log will be written to a file, not a socket.
+#LogSocketPort = 13803
+LogSocketPort = 0
+
+#------------------------ End Log Configuration ----------------------
+
+
+#---- Begin Animation Connection Information ----------------
+
+# IP Address of the machine that has the animation.
+AnimationSocketIP = 127.0.0.1
+
+# 1 if using UDP, 0 if using TCP (TCP may not work, stick with UDP)
+AnimationUseDatagram = 1
+
+# IP Port number to use for sending animation data. If the value is 0, then animation data won't be sent
+AnimationSocketPort = 13873
+#AnimationSocketPort = 0
+
+#---- End Animation Connection Information ----------------
+
+
+#------------------------- Master and Agent IP Address Information ------------------------------------------------
+#
+#************* The IP addresses and ports
+
+#The IP address of the Master (where heartbeats and other messages are sent):
+#MasterIPAddress = 127.0.0.1
+MasterIPAddress = 192.168.1.118
+
+#Port 13834 is initial setup, 8024 is for my program
+#MasterPort = 13834
+MasterPort = 8024
+
+
+# Heartbeat Timer Period (milliseconds)
+HeartbeatPeriod = 100
+
+# The AgentIPAddress is the address where the master sends the robot commands (an IP address on this machine):
+#AgentIPAddress = 127.0.0.1
+AgentIPAddress = 192.168.1.118
+AgentPort =  13832
+
+# If a packet is received on the KillerSocketPort, then TaurusAgent will exit (set the value to 0 to disable this feature).
+KillerSocketPort = 13833
+#------------------------- End Master and Agent IP Address Information ------------------------------------------------

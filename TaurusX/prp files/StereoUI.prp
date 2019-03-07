@@ -1,0 +1,106 @@
+# cube/DHS configuration
+#encoder0.id		Cube
+encoder0.url		rtsp://192.168.1.164:13940/stream1 
+#encoder0.httpIP	192.168.1.164:13080
+encoder0.videoStub	data/cube720p_stub.m4v
+
+#encoder1.id		Cube
+encoder1.url		rtsp://192.168.1.165:13950/stream1
+#encoder1.httpIP	192.168.1.165:13080
+encoder1.videoStub	data/cube720p_stub.m4v
+
+# IONode/Weasel configuration
+#encoder0.id		IONode
+#encoder0.url		rtsp://admin:admin@192.168.1.174:13940/videoinput_1/h264_1/media.stm
+#encoder0.httpIP		192.168.1.174:13080
+#encoder0.videoStub	data/ion1080_stub.m4v
+#encoder0.serialIP  	192.168.1.174:13090	TCP	0 #IONode serial port
+#encoder1.id		IONode
+#encoder1.url		rtsp://admin:admin@192.168.1.175:13950/videoinput_1/h264_1/media.stm
+#encoder1.httpIP	192.168.1.175:13080
+#encoder1.videoStub	data/ion1080_stub.m4v
+#encoder1.serialIP  	192.168.1.175:13090	TCP	0 #IONode serial port
+#
+#
+VideoTimeoutComms   5000
+VideoTimeoutEncode 10000
+#
+still0 	data/blank.png
+still1 	data/blank.png
+WindowSize	1280x720
+#MonoDisplay     1
+audioEnable  1  #0 to disable. 
+audioDevice  -1  # -1 for default audio device
+greenBandOffset	 0
+screenOffsets	 0 0
+disparity	 0 0
+use_gpu		1
+JointAutoWarn .90   #percent to auto pop up joint display
+VerticalFlip    0
+EnableHIDMouse 0
+#CameraCalibrationImagePath    d:/data/warp0005
+CameraCalibrationFile   data/cam%04d.cal
+SwapEyes	 0	#Can't swap eyes in NVidia control panel on Alienware so it's done in StereoUI
+Storyboard	data/StoryBoard720p.prp
+DisparityOverlay 0
+EdgeBlendWidth	 30
+#names of master/agent to quit when StereoUI exits.
+QuitOnExitMaster "M7Master2.exe"
+QuitOnExitAgent "TaurusAgent.exe"
+
+#Updated: Tue Jul 25 18:40:28 2017
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 0 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Tue Jul 25 18:40:29 2017
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 0 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Tue Jul 25 18:41:09 2017
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 0 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Tue Jul 25 18:41:10 2017
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 0 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Mon Oct 23 15:24:40 2017
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 26 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Tue Aug 07 17:20:46 2018
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 26 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Tue Oct 09 13:18:10 2018
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 -6 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
+#Updated: Sat Nov 03 15:19:35 2018
+GreenBandOffset	 0
+ScreenOffsets	 0 0
+disparity	 -6 0
+MenusOffset	 0 0
+DisparityOverlay	 0
+EdgeBlendWidth	 30
