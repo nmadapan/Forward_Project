@@ -101,7 +101,7 @@ The link to the dataset points to the following folders.
 		This file will have the unix timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)
 ----
 
-### **Taurus_Sim**
+### **Taurus Simulator**
 ----
 	It contains 'Readme.txt' and 'data' folder which contains all of the files.
 
