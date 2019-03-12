@@ -3,6 +3,9 @@
 ## Table of Contents
    * [Introduction](#introduction)
    * [Dataset Description](#dataset-description)
+   * [Taurus](#taurus)
+   * [Taurus Simulator](#taurus-sim)
+   * [YuMi](#yumi)
 
 ## Introduction
 In this project, we present the DESK (Dexterous Surgical Skill) dataset. It comprises a set of surgical robotic skills collected during a surgical training task using three robotic platforms: the Taurus II robot, Taurus II simulated robot, and the YuMi robot. This dataset was used to test the idea of transferring knowledge across different domains (e.g. from Taurus to YuMi robot) for a surgical gesture classification task with seven gestures. We explored three different scenarios: 1) No transfer, 2) Transfer from simulated Taurus to real Taurus and 3) Transfer from Simulated Taurus to the YuMi robot. We conducted extensive experiments with three supervised learning models and provided baselines in each of these scenarios. Results show that using simulation data during training enhances the performance on the real robot where limited real data is available. In particular, we obtained an accuracy of 55% on the real Taurus data using a model that is trained only on the simulator data. Furthermore, we achieved an accuracy improvement of 34% when 3% of the real data is added into the training process.
@@ -19,7 +22,9 @@ The link to the dataset points to the following folders.
 ----
 	It contains 'Readme.txt' and 'data' folder which contains all of the files.
 
-	For each Subject x and task j there will be a folder in the 'data' in the format Sx. Were x = 1...8, and j = 1...6. Each data folder Sx contains the following. Every file follows a CSV format, where the separator is a space/comma.
+	For each Subject x and task j there will be a folder in the 'data' in the format Sx.
+	Where x = 1...8, and j = 1...6. Each data folder Sx contains the following.
+	Every file follows a CSV format, where the separator is a space/comma.
 
 #### Kinematics files
 
@@ -27,8 +32,12 @@ The link to the dataset points to the following folders.
 		SxTj_kinematics_left.txt
 		SxTk_ninematics_right.txt
 
-	Important note 1. the data is recorded ONLY when the foot pedal was pressed, meaning, only when the robot whas active or in movement. If the robot was inactive, no kinematic data is recorded.
-	Important note 2. The camera is oposite to the robot. Thus the percieved camera "Left" and "Right" are inverted from the robot's left and right. The robot's left and right are the ones that are used as a reference in the setup
+	Important note 1. the data is recorded ONLY when the foot pedal was pressed,
+	meaning, only when the robot whas active or in movement. If the robot was inactive, no kinematic data is recorded.
+
+	Important note 2. The camera is oposite to the robot.
+	Thus the percieved camera "Left" and "Right" are inverted from the robot's left and right.
+	The robot's left and right are the ones that are used as a reference in the setup
 
 	These are the elements in each line or data frame:
 
@@ -77,7 +86,8 @@ The link to the dataset points to the following folders.
 		There will be a corresonding file named:
 		* SxTj_color_ts.txt
 
-		This file will have the unix timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)
+		This file will have the unix timestamp of each frame
+		(so it can be traced back to the kinematic file timestamp and de depth timestamp)
 
 #### Depth videos
 	There will be one for each subject and task named:
@@ -134,7 +144,8 @@ The link to the dataset points to the following folders.
 		There will be a corresonding file named:
 		* Sx_Tj_color_ts.txt
 
-		This file will have the UTC timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)
+		This file will have the UTC timestamp of each frame
+		(so it can be traced back to the kinematic file timestamp and de depth timestamp)
 ----
 ### **YuMi**
 	It contains 'data' folder and 'Readme.txt'
@@ -196,7 +207,8 @@ The link to the dataset points to the following folders.
 		There will be a corresonding file named:
 		* Sx_Tj_color_ts.txt
 
-		This file will have the unix timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)
+		This file will have the unix timestamp of each frame
+		(so it can be traced back to the kinematic file timestamp and de depth timestamp)
 
 #### Depth videos
 	There will be one for each subject and task named:
