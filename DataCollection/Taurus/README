@@ -69,3 +69,55 @@ The camera is oposite to the robot. Thus the percieved camera "Left" and "Right"
 The robot's left and right are the ones that are used as a reference in the setup
 
 
+#############################
+TAURUS SIMULATOR DATA FORMAT
+#############################
+
+THE DATA IS LOCATED AT: Forward_Project/DataCollection/Taurus_Sim/data
+
+***For each Subject Subject x and a Task j there will be a folder in the Data collection in the format Sx. Were x= 1...8, and j=1...3.
+
+***Each data folder Sx contains the following:
+Every file is txt format with space as delimiter
+
+########################
+# The kinematics files #
+########################
+There will be one for each gripper, named:
+	Sx_Tj_left_kinematics.txt
+	Sx_Tk_right_kinematics.txt
+
+	These are the elements in each line or data frame:
+
+	* ut: UTC
+	* Robot arm kinematics
+	* Absolute pose of the tip in inches (with respect to the robot's origin):
+	x: absolute x pose of the tip
+	y: absolute y pose of the tip
+	z: absolute z pose of the tip
+
+	* End effector orientation in radians:
+	rx:	Rotation about robot x-axis
+	ry:	Rotation about robot y-axis
+	rz:	Rotation about robot z-axis
+
+	* Joint angles for each arm in radians: J0-J6
+
+	* gs: state of the gripper. A floating point that ranges from 30 (completely closed) to 100 (comppletely open)
+
+	Each line in this file has the following format:
+
+	ut  x y z rx ry rz J0 J1 J2 J3 J4 J5 J6 gs
+
+###################
+# The Color files #
+###################
+	There will be three files for each subject and task named:
+	* Sx_Tj_left_color.avi : Robot's Left Stereo Camera view
+	* Sx_Tj_right_color.avi : Robot's Left Stereo Camera view
+	* Sx_Tj_oscr.avi : Oculus screen view
+
+		There will be a corresonding file named:
+		* Sx_Tj_color_ts.txt
+
+		This file will have the UTC timestamp of each frame (so it can be traced back to the kinematic file timestamp and de depth timestamp)
