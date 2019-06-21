@@ -12,7 +12,7 @@ In this project, we present the DESK (Dexterous Surgical Skill) dataset. It comp
 
 Link to the arxiv submission: [paper](https://arxiv.org/abs/1903.00959).
 
-Link to the dataset: [data](https://purdue0-my.sharepoint.com/personal/gonza337_purdue_edu/_layouts/15/onedrive.aspx?FolderCTID=0x0120004A851C9347F497499945A81A5DCD69F0&id=%2Fpersonal%2Fgonza337_purdue_edu%2FDocuments%2FForward%2FData%20Collection)
+Link to the dataset: [data](https://purdue0-my.sharepoint.com/:f:/g/personal/gonza337_purdue_edu/EoSrFoOdZtNCp3vLGtY6TS4BDZhiA1cr3769AbRISE318w)
 
 ## Dataset Description
 This dataset consists of a peg transfer task performed by several participants using the following three robotic platforms: Taurus II, Taurus II simulator and YuMi robot. Each peg transfer consists of a set seven surgemes and each surgeme was marked as a success or failure. The surgemes are annotated using a annotation tool developed by us. Furthermore, we also provide the data related to the segmentation of the objects on the peg board. The detailed information regarding the robots and the statistical design of data collection can be found in the paper. The variations in this dataset include:three robots, ten subjects, various peg board positions and orientations, and direction of peg transfer.
