@@ -1,0 +1,9 @@
+{
+	"commands_filepath": "commands_pegpole.json",
+	"dominant_first": false,
+	"dominant_first_thresh": 0.1,
+
+	"fixed_num_frames": 40,
+
+	"equate_dim": true
+}
